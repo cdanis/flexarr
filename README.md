@@ -17,8 +17,47 @@ This is a Kubernetes FlexVolume driver that mounts a share over CIFS from a NAS 
 
 ## Installation
 
+### General Steps
+
 1. Ensure `jq` and `mount.cifs` are installed on your system.
 2. Copy the `flexvolume.sh` script to your FlexVolume directory.
+
+### Distribution-Specific Instructions
+
+#### Ubuntu/Debian
+
+```bash
+sudo apt update
+sudo apt install -y jq cifs-utils
+```
+
+#### CentOS/RHEL
+
+```bash
+sudo yum install -y epel-release
+sudo yum install -y jq cifs-utils
+```
+
+#### Fedora
+
+```bash
+sudo dnf install -y jq cifs-utils
+```
+
+#### Arch Linux
+
+```bash
+sudo pacman -Syu jq cifs-utils
+```
+
+#### openSUSE
+
+```bash
+sudo zypper refresh
+sudo zypper install -y jq cifs-utils
+```
+
+After installing the dependencies, ensure the `flexvolume.sh` script is executable and placed in the appropriate directory for your Kubernetes setup.
 
 ## Usage
 
