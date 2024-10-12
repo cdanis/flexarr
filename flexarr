@@ -31,13 +31,25 @@ case "$1" in
     NAS_LOCAL_PATH=$(echo "$PARAMS" | jq -r '.nasLocalPath')
     NAS_SHARE=$(echo "$PARAMS" | jq -r '.nasShare')
 
-    # Check if running on NAS
+    # Read readOnly option
+    READ_ONLY=$(echo "$PARAMS" | jq -r '.readOnly // "false"')
+
+    # Read username and password from secret
+    SECRET_NAME=$(echo "$PARAMS" | jq -r '.secretRef.name')
+    NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+    SECRET=$(kubectl get secret "$SECRET_NAME" -n "$NAMESPACE" -o json)
+    USERNAME=$(echo "$SECRET" | jq -r '.data.username' | base64 --decode)
+    PASSWORD=$(echo "$SECRET" | jq -r '.data.password' | base64 --decode)
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
       ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
     else
       # CIFS mount
-      ERROR_MSG=$(mount -t cifs "$NAS_SHARE" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
+      CIFS_OPTIONS="username=$USERNAME,password=$PASSWORD"
+      if [ "$READ_ONLY" == "true" ]; then
+        CIFS_OPTIONS="$CIFS_OPTIONS,ro"
+      fi
+      ERROR_MSG=$(mount -t cifs "$NAS_SHARE" "$MOUNT_DIR" -o "$CIFS_OPTIONS" 2>&1)
     fi
 
     if [ "$?" -eq 0 ]; then
