@@ -45,7 +45,18 @@ case "$1" in
       if [ "$READ_ONLY" == "true" ]; then
         CIFS_OPTIONS="$CIFS_OPTIONS,ro"
       fi
-      ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$CIFS_OPTIONS,$MOUNT_OPTIONS" 2>&1)
+      OPTIONS=""
+      if [ -n "$CIFS_OPTIONS" ]; then
+        OPTIONS="$CIFS_OPTIONS"
+      fi
+      if [ -n "$MOUNT_OPTIONS" ]; then
+        if [ -n "$OPTIONS" ]; then
+          OPTIONS="$OPTIONS,$MOUNT_OPTIONS"
+        else
+          OPTIONS="$MOUNT_OPTIONS"
+        fi
+      fi
+      ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
     fi
 
     if [ "$?" -eq 0 ]; then
