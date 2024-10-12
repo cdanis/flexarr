@@ -11,11 +11,14 @@ case "$1" in
     ;;
   mount)
     # Mount logic
-    NAS_HOSTNAME=$2
-    LOCAL_PATH=$3
-    NAS_SHARE=$4
-    MOUNT_DIR=$5
-    OPTIONS=$6
+    MOUNT_DIR=$2
+    OPTIONS=$3
+
+    # Read parameters from JSON
+    PARAMS=$(cat $OPTIONS)
+    NAS_HOSTNAME=$(echo $PARAMS | jq -r '.nasHostname')
+    LOCAL_PATH=$(echo $PARAMS | jq -r '.localPath')
+    NAS_SHARE=$(echo $PARAMS | jq -r '.nasShare')
 
     # Check if running on NAS
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
