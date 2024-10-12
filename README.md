@@ -57,7 +57,11 @@ sudo zypper refresh
 sudo zypper install -y jq cifs-utils
 ```
 
-After installing the dependencies, ensure the `flexvolume.sh` script is executable and placed in the appropriate directory for your Kubernetes setup.
+After installing the dependencies, ensure the `flexvolume.sh` script is executable and placed in the appropriate directory for your Kubernetes setup. Typically, this directory is `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/<vendor>~<driver>/`, where `<vendor>` and `<driver>` are placeholders for your specific setup. You may need to create this directory if it does not exist. Ensure the script has execute permissions:
+
+```bash
+chmod +x /path/to/flexvolume.sh
+```
 
 ## Usage
 
