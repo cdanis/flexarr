@@ -20,6 +20,6 @@
       "description": "Additional mount options for the CIFS mount."
     }
   },
-  "required": ["nasHostname", "nasShare"],
+  "required": ["nasHostname", "nasShare", "nasLocalPath"],
   "additionalProperties": true
 }
