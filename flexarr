@@ -25,17 +25,17 @@ case "$1" in
     MOUNT_DIR=$2
     PARAMS=$3
 
-    NAS_HOSTNAME=$(echo "$PARAMS" | jq -r '.nasHostname')
-    NAS_LOCAL_PATH=$(echo "$PARAMS" | jq -r '.nasLocalPath')
-    NAS_NETWORK_PATH=$(echo "$PARAMS" | jq -r '.nasNetworkPath')
+    NAS_HOSTNAME=$(jq -r '.nasHostname' <<< "$PARAMS")
+    NAS_LOCAL_PATH=$(jq -r '.nasLocalPath' <<< "$PARAMS")
+    NAS_NETWORK_PATH=$(jq -r '.nasNetworkPath' <<< "$PARAMS")
 
     # Read readOnly and mount options
-    READ_ONLY=$(echo "$PARAMS" | jq -r '.readOnly // "false"')
-    MOUNT_OPTIONS=$(echo "$PARAMS" | jq -r '.mountOptions // ""')
+    READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
+    MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
 
     # Read username and password from JSON input
-    export USER=$(echo "$PARAMS" | jq -r '."kubernetes.io/secret/username"')
-    export PASSWD=$(echo "$PARAMS" | jq -r '."kubernetes.io/secret/password"')
+    export USER=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS")
+    export PASSWD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS")
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
       ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
