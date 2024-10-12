@@ -38,14 +38,14 @@ case "$1" in
     SECRET_NAME=$(echo "$PARAMS" | jq -r '.secretRef.name')
     NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
     SECRET=$(kubectl get secret "$SECRET_NAME" -n "$NAMESPACE" -o json)
-    USERNAME=$(echo "$SECRET" | jq -r '.data.username' | base64 --decode)
-    PASSWORD=$(echo "$SECRET" | jq -r '.data.password' | base64 --decode)
+    export USER=$(echo "$SECRET" | jq -r '.data.username' | base64 --decode)
+    export PASSWD=$(echo "$SECRET" | jq -r '.data.password' | base64 --decode)
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
       ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
     else
       # CIFS mount
-      CIFS_OPTIONS="username=$USERNAME,password=$PASSWORD"
+      CIFS_OPTIONS=""
       if [ "$READ_ONLY" == "true" ]; then
         CIFS_OPTIONS="$CIFS_OPTIONS,ro"
       fi
