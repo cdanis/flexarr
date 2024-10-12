@@ -44,7 +44,7 @@ case "$1" in
       echo '{"status": "Success"}'
     else
       ERROR_MSG=$(<mount_error.log)
-      echo "{\"status\": \"Failure\", \"message\": \"Mount failed: $ERROR_MSG\"}"
+      echo "{\"status\": \"Failure\", \"message\": \"Mount failed: $(jq -R . <<< "$ERROR_MSG")\"}"
     fi
     exit 0
     ;;
@@ -56,7 +56,7 @@ case "$1" in
       echo '{"status": "Success"}'
     else
       ERROR_MSG=$(<umount_error.log)
-      echo "{\"status\": \"Failure\", \"message\": \"Unmount failed: $ERROR_MSG\"}"
+      echo "{\"status\": \"Failure\", \"message\": \"Unmount failed: $(jq -R . <<< "$ERROR_MSG")\"}"
     fi
     exit 0
     ;;
