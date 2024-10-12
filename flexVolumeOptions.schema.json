@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FlexVolume Options",
+  "type": "object",
+  "properties": {
+    "nasHostname": {
+      "type": "string",
+      "description": "The hostname or IP address of the NAS device."
+    },
+    "nasLocalPath": {
+      "type": "string",
+      "description": "The local path on the NAS device for direct mount."
+    },
+    "nasShare": {
+      "type": "string",
+      "description": "The CIFS share path on the NAS device."
+    },
+    "kubernetes.io/fsType": {
+      "type": "string",
+      "description": "The filesystem type to mount."
+    },
+    "kubernetes.io/readwrite": {
+      "type": "string",
+      "enum": ["ro", "rw"],
+      "description": "The read/write mode for the volume."
+    },
+    "kubernetes.io/secret/username": {
+      "type": "string",
+      "description": "The username for CIFS authentication."
+    },
+    "kubernetes.io/secret/password": {
+      "type": "string",
+      "description": "The password for CIFS authentication."
+    },
+    "mountOptions": {
+      "type": "string",
+      "description": "Additional mount options for the CIFS mount."
+    }
+  },
+  "required": ["nasHostname", "nasShare", "kubernetes.io/secret/username", "kubernetes.io/secret/password"],
+  "additionalProperties": false
+}
