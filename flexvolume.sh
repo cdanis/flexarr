@@ -6,6 +6,17 @@
 case "$1" in
   init)
     # Initialization logic
+    # Check for dependencies
+    if ! command -v jq &> /dev/null; then
+      echo '{"status": "Failure", "message": "jq is not installed"}'
+      exit 1
+    fi
+
+    if ! command -v mount.cifs &> /dev/null; then
+      echo '{"status": "Failure", "message": "mount.cifs is not installed"}'
+      exit 1
+    fi
+
     echo '{"status": "Success"}'
     exit 0
     ;;
