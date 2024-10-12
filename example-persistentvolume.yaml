@@ -9,10 +9,10 @@ spec:
     - ReadWriteMany
   flexVolume:
     driver: ninefives.online/flexarr
-    fsType: "ext4"
+    fsType: "cifs"
     options:
       nasHostname: "nas.example.com"
       nasLocalPath: "/local/path"
-      nasShare: "share"
+      nasShare: "//nas/path"
     secretRef:
       name: cifs-secret

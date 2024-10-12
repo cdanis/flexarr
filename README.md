@@ -1,14 +1,8 @@
-# FlexVolume Driver for Kubernetes
+# flexarr: FlexVolume for heterogeneous homelab environments
 
 ## Overview
 
-This is a Kubernetes FlexVolume driver that mounts a share over CIFS from a NAS device. If the pod is running on the NAS device itself, it will use a local direct mount instead.
-
-## Features
-
-- **CIFS Mounting**: Mounts network shares using the CIFS protocol.
-- **Local Direct Mount**: If the pod is on the NAS, it uses a direct mount for efficiency.
-- **JSON Configuration**: Uses JSON for configuration, making it easy to integrate with Kubernetes.
+This is a Kubernetes FlexVolume driver that mounts a share over CIFS from a NAS device. Except, if the pod is running on the NAS device itself, it will use a local direct mount instead.
 
 ## Prerequisites
 
@@ -66,8 +60,6 @@ chmod +x /path/to/flexarr
 ## Troubleshooting
 
 - **Dependency Errors**: Ensure `jq` and `mount.cifs` are installed and accessible in your PATH.
-- **Mount Errors**: Check `mount_error.log` for detailed error messages.
-- **Unmount Errors**: Check `umount_error.log` for detailed error messages.
 
 ## Further Reading
 

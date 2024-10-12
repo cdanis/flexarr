@@ -37,7 +37,7 @@ case "$1" in
       ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
     else
       # CIFS mount
-      ERROR_MSG=$(mount -t cifs //"$NAS_SHARE" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
+      ERROR_MSG=$(mount -t cifs "$NAS_SHARE" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
     fi
 
     if [ "$?" -eq 0 ]; then
