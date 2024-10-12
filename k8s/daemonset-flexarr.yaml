@@ -16,9 +16,9 @@ spec:
       - name: flexarr-installer
         image: alpine:latest
         command: ["/bin/sh", "-c"]
+        command: ["/bin/sh", "-c"]
         args:
-          - apk add --no-cache jq cifs-utils &&
-            mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
+          - mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
             cp /flexarr /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/ &&
             chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr;
         volumeMounts:
