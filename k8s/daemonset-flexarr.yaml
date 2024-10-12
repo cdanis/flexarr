@@ -21,6 +21,29 @@ spec:
             cp /flexarr /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/ &&
             chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr &&
             sleep infinity;
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: flexarr-script
+          mountPath: /flexarr
+          subPath: flexarr
+        - name: host-filesystem
+          mountPath: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr
+      volumes:
+      - name: flexarr-script
+        configMap:
+          name: flexarr-config-d76tbbfdbf
+      - name: host-filesystem
+        hostPath:
+          path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr
+      - name: flexarr-installer
+        image: debian:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
+            cp /flexarr /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/ &&
+            chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr &&
+            sleep infinity;
         volumeMounts:
         - name: flexarr-script
           mountPath: /flexarr
