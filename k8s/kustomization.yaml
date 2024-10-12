@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
 - daemonset-flexarr.yaml
 
+namespace: kube-system
+
 configMapGenerator:
 - name: flexarr-config
   files:
