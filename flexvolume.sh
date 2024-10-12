@@ -17,7 +17,7 @@ case "$1" in
       exit 1
     fi
 
-    echo '{"status": "Success"}'
+    echo '{"status": "Success", "attach": false}'
     exit 0
     ;;
   mount)
