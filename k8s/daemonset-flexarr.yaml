@@ -18,6 +18,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
+            mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
             cp /flexarr /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/ &&
             chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr &&
             sleep infinity;
