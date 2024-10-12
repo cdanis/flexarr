@@ -11,16 +11,19 @@ case "$1" in
     ;;
   mount)
     # Mount logic
-    MOUNT_DIR=$2
-    OPTIONS=$3
+    NAS_HOSTNAME=$2
+    LOCAL_PATH=$3
+    NAS_SHARE=$4
+    MOUNT_DIR=$5
+    OPTIONS=$6
 
     # Check if running on NAS
-    if [ "$(hostname)" == "NAS_HOSTNAME" ]; then
+    if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
-      mount --bind /local/path/to/share $MOUNT_DIR
+      mount --bind $LOCAL_PATH $MOUNT_DIR
     else
       # CIFS mount
-      mount -t cifs //nas/share $MOUNT_DIR -o $OPTIONS
+      mount -t cifs //$NAS_SHARE $MOUNT_DIR -o $OPTIONS
     fi
 
     if [ $? -eq 0 ]; then
