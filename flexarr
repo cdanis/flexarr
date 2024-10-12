@@ -8,8 +8,6 @@
 # Check the command
 case "$1" in
   init)
-    # Initialization logic
-    # Check for dependencies
     if ! command -v jq &> /dev/null; then
       echo '{"status": "Failure", "message": "jq is not installed"}'
       exit 1
@@ -24,7 +22,6 @@ case "$1" in
     exit 0
     ;;
   mount)
-    # Mount logic
     MOUNT_DIR=$2
     OPTIONS=$3
 
