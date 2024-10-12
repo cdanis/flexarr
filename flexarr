@@ -31,9 +31,9 @@ case "$1" in
     NAS_LOCAL_PATH=$(echo "$PARAMS" | jq -r '.nasLocalPath')
     NAS_SHARE=$(echo "$PARAMS" | jq -r '.nasShare')
 
-    # Read readOnly and additional mount options
+    # Read readOnly and mount options
     READ_ONLY=$(echo "$PARAMS" | jq -r '.readOnly // "false"')
-    ADDITIONAL_OPTIONS=$(echo "$PARAMS" | jq -r '.additionalOptions // ""')
+    MOUNT_OPTIONS=$(echo "$PARAMS" | jq -r '.mountOptions // ""')
 
     # Read username and password from JSON input
     export USER=$(echo "$PARAMS" | jq -r '."kubernetes.io/secret/username"')
@@ -47,7 +47,7 @@ case "$1" in
       if [ "$READ_ONLY" == "true" ]; then
         CIFS_OPTIONS="$CIFS_OPTIONS,ro"
       fi
-      ERROR_MSG=$(mount -t cifs "$NAS_SHARE" "$MOUNT_DIR" -o "$CIFS_OPTIONS,$ADDITIONAL_OPTIONS" 2>&1)
+      ERROR_MSG=$(mount -t cifs "$NAS_SHARE" "$MOUNT_DIR" -o "$CIFS_OPTIONS,$MOUNT_OPTIONS" 2>&1)
     fi
 
     if [ "$?" -eq 0 ]; then
