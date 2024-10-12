@@ -19,7 +19,8 @@ spec:
         args:
           - mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
             cp /flexarr /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/ &&
-            chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr;
+            chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr &&
+            sleep infinity;
         volumeMounts:
         - name: flexarr-script
           mountPath: /flexarr
