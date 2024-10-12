@@ -15,28 +15,11 @@
       "type": "string",
       "description": "The CIFS share path on the NAS device."
     },
-    "kubernetes.io/fsType": {
-      "type": "string",
-      "description": "The filesystem type to mount."
-    },
-    "kubernetes.io/readwrite": {
-      "type": "string",
-      "enum": ["ro", "rw"],
-      "description": "The read/write mode for the volume."
-    },
-    "kubernetes.io/secret/username": {
-      "type": "string",
-      "description": "The username for CIFS authentication."
-    },
-    "kubernetes.io/secret/password": {
-      "type": "string",
-      "description": "The password for CIFS authentication."
-    },
     "mountOptions": {
       "type": "string",
       "description": "Additional mount options for the CIFS mount."
     }
   },
-  "required": ["nasHostname", "nasShare", "kubernetes.io/secret/username", "kubernetes.io/secret/password"],
-  "additionalProperties": false
+  "required": ["nasHostname", "nasShare"],
+  "additionalProperties": true
 }
