@@ -63,22 +63,6 @@ After installing the dependencies, ensure the `flexvolume.sh` script is executab
 chmod +x /path/to/flexvolume.sh
 ```
 
-## Usage
-
-The script supports the following commands:
-
-- `init`: Initializes the driver and checks for dependencies.
-- `mount`: Mounts the specified share or local path.
-- `unmount`: Unmounts the specified directory.
-
-### Example
-
-To mount a share, use the following command:
-
-```bash
-./flexvolume.sh mount <mount_dir> <options_file>
-```
-
 ## Troubleshooting
 
 - **Dependency Errors**: Ensure `jq` and `mount.cifs` are installed and accessible in your PATH.
