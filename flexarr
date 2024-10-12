@@ -41,21 +41,14 @@ case "$1" in
       ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
     else
       # CIFS mount
-      CIFS_OPTIONS=""
+      OPTIONS=()
       if [ "$READ_ONLY" == "true" ]; then
-        CIFS_OPTIONS="$CIFS_OPTIONS,ro"
-      fi
-      OPTIONS=""
-      if [ -n "$CIFS_OPTIONS" ]; then
-        OPTIONS="$CIFS_OPTIONS"
+        OPTIONS+=("ro")
       fi
       if [ -n "$MOUNT_OPTIONS" ]; then
-        if [ -n "$OPTIONS" ]; then
-          OPTIONS="$OPTIONS,$MOUNT_OPTIONS"
-        else
-          OPTIONS="$MOUNT_OPTIONS"
-        fi
+        OPTIONS+=("$MOUNT_OPTIONS")
       fi
+      OPTIONS=$(IFS=,; echo "${OPTIONS[*]}")
       ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
     fi
 
