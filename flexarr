@@ -1,6 +1,9 @@
 #!/bin/bash
-
-# FlexVolume script for CIFS or local direct mount
+# flexarr: a FlexVolume driver for CIFS or local direct mount
+# version 0.1.0
+# Copyright (c) 2024, Chris Danis
+# Licensed under the AGPL license
+# https://www.gnu.org/licenses/agpl-3.0.html
 
 # Check the command
 case "$1" in
