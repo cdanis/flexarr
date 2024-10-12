@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: flexarr-installer
-        image: alpine:latest
+        image: debian:latest
         command: ["/bin/sh", "-c"]
         args:
           - mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
