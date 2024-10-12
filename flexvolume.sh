@@ -34,16 +34,15 @@ case "$1" in
     # Check if running on NAS
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
-      mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2> mount_error.log
+      ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
     else
       # CIFS mount
-      mount -t cifs //"$NAS_SHARE" "$MOUNT_DIR" -o "$OPTIONS" 2> mount_error.log
+      ERROR_MSG=$(mount -t cifs //"$NAS_SHARE" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
     fi
 
     if [ "$?" -eq 0 ]; then
       echo '{"status": "Success"}'
     else
-      ERROR_MSG=$(<mount_error.log)
       echo "{\"status\": \"Failure\", \"message\": \"Mount failed: $(jq -R . <<< "$ERROR_MSG")\"}"
     fi
     exit 0
@@ -51,11 +50,10 @@ case "$1" in
   unmount)
     # Unmount logic
     MOUNT_DIR=$2
-    umount "$MOUNT_DIR" 2> umount_error.log
+    ERROR_MSG=$(umount "$MOUNT_DIR" 2>&1)
     if [ "$?" -eq 0 ]; then
       echo '{"status": "Success"}'
     else
-      ERROR_MSG=$(<umount_error.log)
       echo "{\"status\": \"Failure\", \"message\": \"Unmount failed: $(jq -R . <<< "$ERROR_MSG")\"}"
     fi
     exit 0
