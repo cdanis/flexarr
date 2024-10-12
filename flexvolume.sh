@@ -28,7 +28,7 @@ case "$1" in
     # Read parameters from JSON
     PARAMS=$(cat $OPTIONS)
     NAS_HOSTNAME=$(echo $PARAMS | jq -r '.nasHostname')
-    NAS_LOCAL_PATH=$(echo $PARAMS | jq -r '.localPath')
+    NAS_LOCAL_PATH=$(echo $PARAMS | jq -r '.nasLocalPath')
     NAS_SHARE=$(echo $PARAMS | jq -r '.nasShare')
 
     # Check if running on NAS
