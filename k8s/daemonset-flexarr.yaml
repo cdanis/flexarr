@@ -35,7 +35,7 @@ spec:
           name: flexarr-config-d76tbbfdbf
       - name: host-filesystem
         hostPath:
-          path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr
+          path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
       - name: flexarr-installer
         image: debian:latest
         command: ["/bin/sh", "-c"]
