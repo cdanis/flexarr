@@ -5,7 +5,7 @@
   "properties": {
     "nasHostname": {
       "type": "string",
-      "description": "The hostname or IP address of the NAS device."
+      "description": "The hostname of the NAS device node, as would be reported by invoking `hostname` there."
     },
     "nasLocalPath": {
       "type": "string",
@@ -13,11 +13,11 @@
     },
     "nasShare": {
       "type": "string",
-      "description": "The CIFS share path on the NAS device."
+      "description": "The CIFS share path for the NAS device in the rest of the cluster."
     },
     "mountOptions": {
       "type": "string",
-      "description": "Additional mount options for the CIFS mount."
+      "description": "Additional mount options for the CIFS mount. See `man mount.cifs` for details."
     }
   },
   "required": ["nasHostname", "nasShare", "nasLocalPath"],
