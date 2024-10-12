@@ -26,7 +26,7 @@ case "$1" in
     OPTIONS=$3
 
     # Read parameters from JSON
-    PARAMS=$(cat "$OPTIONS")
+    PARAMS="$OPTIONS"
     NAS_HOSTNAME=$(echo "$PARAMS" | jq -r '.nasHostname')
     NAS_LOCAL_PATH=$(echo "$PARAMS" | jq -r '.nasLocalPath')
     NAS_SHARE=$(echo "$PARAMS" | jq -r '.nasShare')
