@@ -27,7 +27,7 @@ spec:
       volumes:
       - name: flexarr-script
         configMap:
-          name: flexarr-config
+          name: flexarr-config-d76tbbfdbf
       hostNetwork: true
       hostPID: true
       tolerations:
