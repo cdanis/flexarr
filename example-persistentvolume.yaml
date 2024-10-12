@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  flexVolume:
+    driver: vendor.com/driver
+    fsType: "ext4"
+    options:
+      nasHostname: "nas.example.com"
+      nasLocalPath: "/local/path"
+      nasShare: "share"
+    secretRef:
+      name: cifs-secret
