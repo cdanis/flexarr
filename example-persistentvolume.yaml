@@ -8,7 +8,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   flexVolume:
-    driver: vendor.com/driver
+    driver: ninefives.online/flexarr
     fsType: "ext4"
     options:
       nasHostname: "nas.example.com"
