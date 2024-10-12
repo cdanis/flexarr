@@ -28,13 +28,13 @@ case "$1" in
     # Read parameters from JSON
     PARAMS=$(cat $OPTIONS)
     NAS_HOSTNAME=$(echo $PARAMS | jq -r '.nasHostname')
-    LOCAL_PATH=$(echo $PARAMS | jq -r '.localPath')
+    NAS_LOCAL_PATH=$(echo $PARAMS | jq -r '.localPath')
     NAS_SHARE=$(echo $PARAMS | jq -r '.nasShare')
 
     # Check if running on NAS
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
-      mount --bind $LOCAL_PATH $MOUNT_DIR
+      mount --bind $NAS_LOCAL_PATH $MOUNT_DIR
     else
       # CIFS mount
       mount -t cifs //$NAS_SHARE $MOUNT_DIR -o $OPTIONS
