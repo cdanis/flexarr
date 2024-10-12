@@ -6,7 +6,7 @@ spec:
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   flexVolume:
     driver: ninefives.online/flexarr
     fsType: "ext4"
