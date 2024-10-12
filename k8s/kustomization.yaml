@@ -4,4 +4,4 @@ kind: Kustomization
 configMapGenerator:
 - name: flexarr-config
   files:
-    - flexarr
+    - ../flexarr
