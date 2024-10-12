@@ -27,7 +27,7 @@ spec:
           subPath: flexarr
       volumes:
       - name: flexarr-script
-        configMap:
+        configMapRef:
           name: flexarr-config
       hostNetwork: true
       hostPID: true
