@@ -13,6 +13,6 @@ spec:
     options:
       nasHostname: "nas.example.com"
       nasLocalPath: "/local/path"
-      nasShare: "//nas/path"
+      nasNetworkPath: "//nas/path"
     secretRef:
       name: cifs-secret

@@ -27,7 +27,7 @@ case "$1" in
 
     NAS_HOSTNAME=$(echo "$PARAMS" | jq -r '.nasHostname')
     NAS_LOCAL_PATH=$(echo "$PARAMS" | jq -r '.nasLocalPath')
-    NAS_SHARE=$(echo "$PARAMS" | jq -r '.nasShare')
+    NAS_NETWORK_PATH=$(echo "$PARAMS" | jq -r '.nasNetworkPath')
 
     # Read readOnly and mount options
     READ_ONLY=$(echo "$PARAMS" | jq -r '.readOnly // "false"')
@@ -45,7 +45,7 @@ case "$1" in
       if [ "$READ_ONLY" == "true" ]; then
         CIFS_OPTIONS="$CIFS_OPTIONS,ro"
       fi
-      ERROR_MSG=$(mount -t cifs "$NAS_SHARE" "$MOUNT_DIR" -o "$CIFS_OPTIONS,$MOUNT_OPTIONS" 2>&1)
+      ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$CIFS_OPTIONS,$MOUNT_OPTIONS" 2>&1)
     fi
 
     if [ "$?" -eq 0 ]; then

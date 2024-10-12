@@ -11,15 +11,15 @@
       "type": "string",
       "description": "The local path on the NAS device for direct mount."
     },
-    "nasShare": {
+    "nasNetworkPath": {
       "type": "string",
-      "description": "The CIFS share path for the NAS device in the rest of the cluster."
+      "description": "The CIFS network path for the NAS device in the rest of the cluster."
     },
     "mountOptions": {
       "type": "string",
       "description": "Additional mount options for the CIFS mount. See `man mount.cifs` for details."
     }
   },
-  "required": ["nasHostname", "nasShare", "nasLocalPath"],
+  "required": ["nasHostname", "nasNetworkPath", "nasLocalPath"],
   "additionalProperties": true
 }
