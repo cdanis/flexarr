@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: flexarr-installer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: flexarr-installer
+  template:
+    metadata:
+      labels:
+        name: flexarr-installer
+    spec:
+      containers:
+      - name: flexarr-installer
+        image: alpine:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - apk add --no-cache jq cifs-utils &&
+            mkdir -p /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr &&
+            cp /flexarr /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/ &&
+            chmod +x /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr;
+        volumeMounts:
+        - name: flexarr-script
+          mountPath: /flexarr
+          subPath: flexarr
+      volumes:
+      - name: flexarr-script
+        configMap:
+          name: flexarr-config
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
