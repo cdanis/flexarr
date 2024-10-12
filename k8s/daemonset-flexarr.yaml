@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: flexarr-script
         configMap:
-          name: flexarr-config-d76tbbfdbf
+          name: flexarr-config
       - name: host-filesystem
         hostPath:
           path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
