@@ -44,4 +44,4 @@ To mount a share, use the following command:
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the AGPL License.
