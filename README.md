@@ -73,6 +73,8 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
          nasNetworkPath: "//nas.example.com/share"
    ```
 
+   Note: Currently, only 'cifs' is supported as the fsType. Future versions may support additional network filesystems.
+
 3. Create a PersistentVolumeClaim (PVC):
    ```yaml
    apiVersion: v1
