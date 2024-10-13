@@ -64,11 +64,13 @@ case "$1" in
         READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
         MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
         FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
+        FS_TYPE=$(jq -r '."kubernetes.io/fsType" // empty' <<< "$PARAMS")
 
         # Check required parameters
         [[ -z "$NAS_HOSTNAME" ]] && die "nasHostname is required"
         [[ -z "$NAS_LOCAL_PATH" ]] && die "nasLocalPath is required"
         [[ -z "$NAS_NETWORK_PATH" ]] && die "nasNetworkPath is required"
+        [[ "$FS_TYPE" != "cifs" ]] && die "fsType must be 'cifs'"
 
         # Securely handle credentials
         USER=$(safe_decode "$(jq -r '."kubernetes.io/secret/username" // empty' <<< "$PARAMS")" "username")
