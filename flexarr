@@ -26,7 +26,7 @@ run_or_die() {
     if ! output=$(eval "$1" 2>&1); then
         die "$output"
     fi
-    echo "$output"
+    log "$output"
 }
 
 # Function to check required commands
@@ -86,12 +86,14 @@ case "$1" in
             run_or_die "mount -t cifs \"$NAS_NETWORK_PATH\" \"$MOUNT_DIR\" -o \"$(IFS=,; echo "${OPTIONS[*]}")\""
         fi
 
-        echo "{\"status\": \"Success\"}"
+        log "Mount operation completed successfully"
+        echo '{"status": "Success"}'
         ;;
     unmount)
         MOUNT_DIR=$2
         run_or_die "umount \"$MOUNT_DIR\""
-        echo "{\"status\": \"Success\"}"
+        log "Unmount operation completed successfully"
+        echo '{"status": "Success"}'
         ;;
     *)
         die "Not supported"
