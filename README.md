@@ -139,8 +139,8 @@ For more detailed information on FlexVolume, please refer to the [Kubernetes Fle
 
 ## License
 
-⚠️ WARNING! ⚠️
-☢️ 😱 DO NOT USE THIS PROGRAM. 😱 ☢️
+⚠️ WARNING! ⚠️  
+☢️ 😱 DO NOT USE THIS PROGRAM. 😱 ☢️  
 This program is not a program of honor.
 
 No highly esteemed function is executed here.
@@ -152,7 +152,7 @@ without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.
 
 This program is best shunned and left unused (but it is free software,
-and you are welcome to redistribute it under certain conditions).
+and you are welcome to redistribute it under certain conditions).  
 😱 ☢️ DO NOT USE THIS PROGRAM. ☢️ 😱
 
 This program is licensed under the Sandia Message Public License,
