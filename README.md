@@ -41,4 +41,4 @@ For more detailed information on FlexVolume, please refer to the [Kubernetes Fle
 
 ## License
 
-This project is licensed under the AGPL License.
+This project is licensed under the [AGPL](https://www.gnu.org/licenses/agpl-3.0.html) License.
