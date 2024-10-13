@@ -1,79 +1,85 @@
 #!/bin/bash
 # flexarr: a FlexVolume driver for CIFS or local direct mount
-# version 0.1.0
+# version 0.2.0
 # Copyright (c) 2024, Chris Danis
 # Licensed under the AGPL license
 # https://www.gnu.org/licenses/agpl-3.0.html
 
-# Check the command
-case "$1" in
-  init)
-    if ! command -v jq &> /dev/null; then
-      echo '{"status": "Failure", "message": "jq is not installed"}'
-      exit 1
-    fi
+set -e
 
-    if ! command -v mount.cifs &> /dev/null; then
-      echo '{"status": "Failure", "message": "mount.cifs is not installed"}'
-      exit 1
-    fi
+# Function for logging
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >&2
+}
 
-    echo '{"status": "Success", "capabilities": {"attach": false}}'
-    exit 0
-    ;;
-  mount)
-    MOUNT_DIR=$2
-    PARAMS=$3
-
-    NAS_HOSTNAME=$(jq -r '.nasHostname' <<< "$PARAMS")
-    NAS_LOCAL_PATH=$(jq -r '.nasLocalPath' <<< "$PARAMS")
-    NAS_NETWORK_PATH=$(jq -r '.nasNetworkPath' <<< "$PARAMS")
-
-    # Read readOnly, mount options, and FsGroup
-    READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
-    MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
-    FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
-    export USER=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS" | base64 --decode)
-    export PASSWD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS" | base64 --decode)
-    if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
-      # Local direct mount
-      ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
-    else
-      # CIFS mount
-      OPTIONS=()
-      if [ "$READ_ONLY" == "true" ]; then
-        OPTIONS+=("ro")
-      fi
-      if [ -n "$MOUNT_OPTIONS" ]; then
-        OPTIONS+=("$MOUNT_OPTIONS")
-      fi
-      if [ -n "$FS_GROUP" ]; then
-        OPTIONS+=("gid=$FS_GROUP")
-      fi
-      OPTIONS=$(IFS=,; echo "${OPTIONS[*]}")
-      ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
-    fi
-
-    if [ "$?" -eq 0 ]; then
-      echo '{"status": "Success"}'
-    else
-      echo "{\"status\": \"Failure\", \"message\": $(jq -sR . <<< "$ERROR_MSG")}"
-    fi
-    exit 0
-    ;;
-  unmount)
-    # Unmount logic
-    MOUNT_DIR=$2
-    ERROR_MSG=$(umount "$MOUNT_DIR" 2>&1)
-    if [ "$?" -eq 0 ]; then
-      echo '{"status": "Success"}'
-    else
-      echo "{\"status\": \"Failure\", \"message\": $(jq -sR . <<< "$ERROR_MSG")}"
-    fi
-    exit 0
-    ;;
-  *)
-    echo '{"status": "Not supported"}'
+# Function for error handling
+error() {
+    log "ERROR: $1"
+    echo "{\"status\": \"Failure\", \"message\": \"$1\"}"
     exit 1
-    ;;
+}
+
+# Function to check required commands
+check_command() {
+    if ! command -v "$1" &> /dev/null; then
+        error "$1 is not installed"
+    fi
+}
+
+# Function to safely decode base64
+safe_decode() {
+    echo "$1" | base64 --decode 2>/dev/null || error "Failed to decode $2"
+}
+
+# Main logic
+case "$1" in
+    init)
+        check_command jq
+        check_command mount.cifs
+        echo '{"status": "Success", "capabilities": {"attach": false}}'
+        ;;
+    mount)
+        MOUNT_DIR=$2
+        PARAMS=$3
+
+        # Extract parameters
+        NAS_HOSTNAME=$(jq -r '.nasHostname // empty' <<< "$PARAMS")
+        NAS_LOCAL_PATH=$(jq -r '.nasLocalPath // empty' <<< "$PARAMS")
+        NAS_NETWORK_PATH=$(jq -r '.nasNetworkPath // empty' <<< "$PARAMS")
+        READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
+        MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
+        FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
+
+        # Check required parameters
+        [[ -z "$NAS_HOSTNAME" ]] && error "nasHostname is required"
+        [[ -z "$NAS_LOCAL_PATH" ]] && error "nasLocalPath is required"
+        [[ -z "$NAS_NETWORK_PATH" ]] && error "nasNetworkPath is required"
+
+        # Securely handle credentials
+        USER=$(safe_decode "$(jq -r '."kubernetes.io/secret/username" // empty' <<< "$PARAMS")" "username")
+        PASSWD=$(safe_decode "$(jq -r '."kubernetes.io/secret/password" // empty' <<< "$PARAMS")" "password")
+
+        if [[ "$(hostname)" == "$NAS_HOSTNAME" ]]; then
+            log "Performing local direct mount"
+            mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" || error "Failed to mount locally"
+        else
+            log "Performing CIFS mount"
+            OPTIONS=("user=$USER" "password=$PASSWD")
+            [[ "$READ_ONLY" == "true" ]] && OPTIONS+=("ro")
+            [[ -n "$MOUNT_OPTIONS" ]] && OPTIONS+=($MOUNT_OPTIONS)
+            [[ -n "$FS_GROUP" ]] && OPTIONS+=("gid=$FS_GROUP")
+            
+            mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$(IFS=,; echo "${OPTIONS[*]}")" || error "Failed to mount CIFS"
+        fi
+
+        echo '{"status": "Success"}'
+        ;;
+    unmount)
+        MOUNT_DIR=$2
+        umount "$MOUNT_DIR" || error "Failed to unmount $MOUNT_DIR"
+        echo '{"status": "Success"}'
+        ;;
+    *)
+        error "Not supported"
+        ;;
 esac
