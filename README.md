@@ -22,7 +22,14 @@ To use the `flexarr` FlexVolume plugin, follow these steps:
 
 1. **Create a PersistentVolume (PV):** Define a PersistentVolume in your Kubernetes cluster that uses the `flexarr` driver. You can use the `example-persistentvolume.yaml` as a template.
 
-2. **Create a PersistentVolumeClaim (PVC):** Create a PersistentVolumeClaim that matches the specifications of your PersistentVolume.
+2. **Create a PersistentVolumeClaim (PVC):** Create a matching PersistentVolumeClaim:
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+spec:
+  storageClassName: ""
+  volumeName: name-of-your-pv
+```
 
 3. **Mount the Volume in a Pod:** Use the PVC in your Pod specification to mount the volume. Ensure that the Pod is scheduled on a node that can access the NAS device.
 
