@@ -4,7 +4,7 @@
 sudo apt update
 
 # Install prerequisites
-sudo apt install -y jq cifs-utils
+sudo apt install -y jq cifs-utils util-linux
 
 # Define the FlexVolume directory for k3s
 FLEXVOLUME_DIR="/usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr"

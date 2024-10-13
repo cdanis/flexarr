@@ -9,7 +9,7 @@ set -e
 
 # Function for logging
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >&2
+    logger --id=$$ --tag flexarr "$1"
 }
 
 # Function for error handling
@@ -35,6 +35,11 @@ check_command() {
         die "$1 is not installed"
     fi
 }
+
+# Check for required commands
+check_command jq
+check_command mount.cifs
+check_command logger
 
 # Function to safely decode base64
 safe_decode() {
