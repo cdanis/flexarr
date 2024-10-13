@@ -9,7 +9,7 @@ set -e
 
 # Function for logging
 log() {
-    logger --id=$$ --tag flexarr "$1"
+    logger -t flexarr "$1"
 }
 
 # Function for error handling
