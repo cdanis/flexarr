@@ -14,9 +14,19 @@ log() {
 
 # Function for error handling
 die() {
-    log "ERROR: $1"
-    echo "{\"status\": \"Failure\", \"message\": \"$1\"}"
+    local error_message="$1"
+    log "ERROR: $error_message"
+    echo "{\"status\": \"Failure\", \"message\": $(jq -Rs . <<< "$error_message")}"
     exit 1
+}
+
+# Function to execute command and capture output
+execute_command() {
+    local output
+    if ! output=$(eval "$1" 2>&1); then
+        die "$output"
+    fi
+    echo "$output"
 }
 
 # Function to check required commands
@@ -61,7 +71,15 @@ case "$1" in
 
         if [[ "$(hostname)" == "$NAS_HOSTNAME" ]]; then
             log "Performing local direct mount"
-            mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" || die "Failed to mount locally"
+            output=$(execute_command "mount --bind \"$NAS_LOCAL_PATH\" \"$MOUNT_DIR\"")
+            
+            if [[ "$READ_ONLY" == "true" ]]; then
+                output+=$'\n'$(execute_command "mount -o remount,ro \"$MOUNT_DIR\"")
+            fi
+            
+            if [[ -n "$FS_GROUP" ]]; then
+                output+=$'\n'$(execute_command "mount -o remount,gid=\"$FS_GROUP\" \"$MOUNT_DIR\"")
+            fi
         else
             log "Performing CIFS mount"
             OPTIONS=("user=$USER" "password=$PASSWD")
@@ -69,15 +87,15 @@ case "$1" in
             [[ -n "$MOUNT_OPTIONS" ]] && OPTIONS+=($MOUNT_OPTIONS)
             [[ -n "$FS_GROUP" ]] && OPTIONS+=("gid=$FS_GROUP")
             
-            mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$(IFS=,; echo "${OPTIONS[*]}")" || die "Failed to mount CIFS"
+            output=$(execute_command "mount -t cifs \"$NAS_NETWORK_PATH\" \"$MOUNT_DIR\" -o \"$(IFS=,; echo "${OPTIONS[*]}")\"")
         fi
 
-        echo '{"status": "Success"}'
+        echo "{\"status\": \"Success\", \"message\": $(jq -Rs . <<< "$output")}"
         ;;
     unmount)
         MOUNT_DIR=$2
-        umount "$MOUNT_DIR" || die "Failed to unmount $MOUNT_DIR"
-        echo '{"status": "Success"}'
+        output=$(execute_command "umount \"$MOUNT_DIR\"")
+        echo "{\"status\": \"Success\", \"message\": $(jq -Rs . <<< "$output")}"
         ;;
     *)
         die "Not supported"
