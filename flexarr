@@ -21,7 +21,7 @@ die() {
 }
 
 # Function to execute command and capture output
-execute_command() {
+run_or_die() {
     local output
     if ! output=$(eval "$1" 2>&1); then
         die "$output"
@@ -71,14 +71,14 @@ case "$1" in
 
         if [[ "$(hostname)" == "$NAS_HOSTNAME" ]]; then
             log "Performing local direct mount"
-            output=$(execute_command "mount --bind \"$NAS_LOCAL_PATH\" \"$MOUNT_DIR\"")
+            run_or_die "mount --bind \"$NAS_LOCAL_PATH\" \"$MOUNT_DIR\""
             
             if [[ "$READ_ONLY" == "true" ]]; then
-                output+=$'\n'$(execute_command "mount -o remount,ro \"$MOUNT_DIR\"")
+                run_or_die "mount -o remount,ro \"$MOUNT_DIR\""
             fi
             
             if [[ -n "$FS_GROUP" ]]; then
-                output+=$'\n'$(execute_command "mount -o remount,gid=\"$FS_GROUP\" \"$MOUNT_DIR\"")
+                run_or_die "mount -o remount,gid=\"$FS_GROUP\" \"$MOUNT_DIR\""
             fi
         else
             log "Performing CIFS mount"
@@ -87,15 +87,15 @@ case "$1" in
             [[ -n "$MOUNT_OPTIONS" ]] && OPTIONS+=($MOUNT_OPTIONS)
             [[ -n "$FS_GROUP" ]] && OPTIONS+=("gid=$FS_GROUP")
             
-            output=$(execute_command "mount -t cifs \"$NAS_NETWORK_PATH\" \"$MOUNT_DIR\" -o \"$(IFS=,; echo "${OPTIONS[*]}")\"")
+            run_or_die "mount -t cifs \"$NAS_NETWORK_PATH\" \"$MOUNT_DIR\" -o \"$(IFS=,; echo "${OPTIONS[*]}")\""
         fi
 
-        echo "{\"status\": \"Success\", \"message\": $(jq -Rs . <<< "$output")}"
+        echo "{\"status\": \"Success\"}"
         ;;
     unmount)
         MOUNT_DIR=$2
-        output=$(execute_command "umount \"$MOUNT_DIR\"")
-        echo "{\"status\": \"Success\", \"message\": $(jq -Rs . <<< "$output")}"
+        run_or_die "umount \"$MOUNT_DIR\""
+        echo "{\"status\": \"Success\"}"
         ;;
     *)
         die "Not supported"
