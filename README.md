@@ -130,6 +130,10 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
 - Use Kubernetes Secrets to manage CIFS credentials.
 - Bind mounts are spooky. Use with caution.
 
+## Further Reading
+
+For more detailed information on FlexVolume, please refer to the [Kubernetes FlexVolume Documentation](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-storage/flexvolume.md#readme) and the [OpenShift FlexVolume Documentation](https://docs.openshift.com/container-platform/3.11/install_config/persistent_storage/persistent_storage_flex_volume.html).
+
 ## License
 
 This project is licensed under the [AGPL](https://www.gnu.org/licenses/agpl-3.0.html) License.
