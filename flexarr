@@ -5,60 +5,75 @@
 # Licensed under the AGPL license
 # https://www.gnu.org/licenses/agpl-3.0.html
 
-# Check for required tools
-if ! command -v jq &> /dev/null; then
-  echo '{"status": "Failure", "message": "jq is not installed. Please install jq."}' >&2
-  exit 1
-fi
+# Check the command
+case "$1" in
+  init)
+    if ! command -v jq &> /dev/null; then
+      echo '{"status": "Failure", "message": "jq is not installed"}'
+      exit 1
+    fi
 
-if ! command -v mount.cifs &> /dev/null; then
-  echo '{"status": "Failure", "message": "mount.cifs is not installed. Please install cifs-utils."}' >&2
-  exit 1
-fi
+    if ! command -v mount.cifs &> /dev/null; then
+      echo '{"status": "Failure", "message": "mount.cifs is not installed"}'
+      exit 1
+    fi
 
-# Extract parameters
-MOUNT_DIR="$1"
-PARAMS="$2"
+    echo '{"status": "Success", "capabilities": {"attach": false}}'
+    exit 0
+    ;;
+  mount)
+    MOUNT_DIR=$2
+    PARAMS=$3
 
-# Robust parameter extraction using jq
-NAS_HOSTNAME=$(jq -r '.nasHostname' <<< "$PARAMS" 2>/dev/null) || { echo '{"status": "Failure", "message": "nasHostname not found in parameters."}' >&2; exit 1; }
-NAS_LOCAL_PATH=$(jq -r '.nasLocalPath' <<< "$PARAMS" 2>/dev/null) || { echo '{"status": "Failure", "message": "nasLocalPath not found in parameters."}' >&2; exit 1; }
-NAS_NETWORK_PATH=$(jq -r '.nasNetworkPath' <<< "$PARAMS" 2>/dev/null) || { echo '{"status": "Failure", "message": "nasNetworkPath not found in parameters."}' >&2; exit 1; }
+    NAS_HOSTNAME=$(jq -r '.nasHostname' <<< "$PARAMS")
+    NAS_LOCAL_PATH=$(jq -r '.nasLocalPath' <<< "$PARAMS")
+    NAS_NETWORK_PATH=$(jq -r '.nasNetworkPath' <<< "$PARAMS")
 
-# Handle readOnly, mount options, and FsGroup
-READ_ONLY=$(jq -r '.readOnly // false' <<< "$PARAMS" 2>/dev/null)
-MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS" 2>/dev/null)
-FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // ""' <<< "$PARAMS" 2>/dev/null)
+    # Read readOnly, mount options, and FsGroup
+    READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
+    MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
+    FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
+    export USER=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS" | base64 --decode)
+    export PASSWD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS" | base64 --decode)
+    if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
+      # Local direct mount
+      ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
+    else
+      # CIFS mount
+      OPTIONS=()
+      if [ "$READ_ONLY" == "true" ]; then
+        OPTIONS+=("ro")
+      fi
+      if [ -n "$MOUNT_OPTIONS" ]; then
+        OPTIONS+=("$MOUNT_OPTIONS")
+      fi
+      if [ -n "$FS_GROUP" ]; then
+        OPTIONS+=("gid=$FS_GROUP")
+      fi
+      OPTIONS=$(IFS=,; echo "${OPTIONS[*]}")
+      ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
+    fi
 
-# Robust secret extraction
-USERNAME=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS" | base64 --decode 2>/dev/null) || { echo '{"status": "Failure", "message": "kubernetes.io/secret/username not found or invalid."}' >&2; exit 1; }
-PASSWORD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS" | base64 --decode 2>/dev/null) || { echo '{"status": "Failure", "message": "kubernetes.io/secret/password not found or invalid."}' >&2; exit 1; }
-
-# Check if the host is the NAS
-if [[ "$NAS_HOSTNAME" == "$(hostname)" ]]; then
-  # Local direct mount
-  mount_result=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
-else
-  # CIFS mount
-  options=()
-  if [[ "$READ_ONLY" == "true" ]]; then
-    options+=("ro")
-  fi
-  if [[ -n "$MOUNT_OPTIONS" ]]; then
-    options+=("$MOUNT_OPTIONS")
-  fi
-  if [[ -n "$FS_GROUP" ]]; then
-    options+=("gid=$FS_GROUP")
-  fi
-  options=$(IFS=,; echo "${options[*]}")
-  mount_result=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$options" -o username="$USERNAME" -o password="$PASSWORD" 2>&1)
-fi
-
-# Check mount result
-if [[ $? -eq 0 ]]; then
-  echo '{"status": "Success"}'
-else
-  echo "{\"status\": \"Failure\", \"message\": \"$mount_result\"}"
-fi
-
-exit 0
+    if [ "$?" -eq 0 ]; then
+      echo '{"status": "Success"}'
+    else
+      echo "{\"status\": \"Failure\", \"message\": $(jq -sR . <<< "$ERROR_MSG")}"
+    fi
+    exit 0
+    ;;
+  unmount)
+    # Unmount logic
+    MOUNT_DIR=$2
+    ERROR_MSG=$(umount "$MOUNT_DIR" 2>&1)
+    if [ "$?" -eq 0 ]; then
+      echo '{"status": "Success"}'
+    else
+      echo "{\"status\": \"Failure\", \"message\": $(jq -sR . <<< "$ERROR_MSG")}"
+    fi
+    exit 0
+    ;;
+  *)
+    echo '{"status": "Not supported"}'
+    exit 1
+    ;;
+esac
