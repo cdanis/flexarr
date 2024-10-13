@@ -34,7 +34,7 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
 
 2. Verify the DaemonSet is running:
    ```bash
-   kubectl get pods -n kube-system -l name=flexarr-installer
+   kubectl get pods -n kube-system -l name=flexarr-installer -o wide
    ```
 
 ## Usage
@@ -44,8 +44,8 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
    apiVersion: v1
    kind: Secret
    metadata:
-     name: cifs-secret
-   type: kubernetes.io/cifs
+     name: flexarr-cifs-secret
+   type: ninefives.online/flexarr
    stringData:
      username: your-username
      password: your-password
