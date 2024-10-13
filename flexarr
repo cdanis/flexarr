@@ -74,11 +74,7 @@ case "$1" in
             run_or_die "mount --bind \"$NAS_LOCAL_PATH\" \"$MOUNT_DIR\""
             
             if [[ "$READ_ONLY" == "true" ]]; then
-                run_or_die "mount -o remount,ro \"$MOUNT_DIR\""
-            fi
-            
-            if [[ -n "$FS_GROUP" ]]; then
-                run_or_die "mount -o remount,gid=\"$FS_GROUP\" \"$MOUNT_DIR\""
+                run_or_die "mount -o remount,bind,ro \"$MOUNT_DIR\""
             fi
         else
             log "Performing CIFS mount"
