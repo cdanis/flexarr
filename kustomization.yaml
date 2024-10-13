@@ -9,4 +9,4 @@ namespace: kube-system
 configMapGenerator:
 - name: flexarr-config
   files:
-    - ../flexarr
+    - ./flexarr
