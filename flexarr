@@ -29,11 +29,10 @@ case "$1" in
     NAS_LOCAL_PATH=$(jq -r '.nasLocalPath' <<< "$PARAMS")
     NAS_NETWORK_PATH=$(jq -r '.nasNetworkPath' <<< "$PARAMS")
 
-    # Read readOnly and mount options
+    # Read readOnly, mount options, and FsGroup
     READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
     MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
-
-    # Read username and password from JSON input
+    FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
     export USER=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS")
     export PASSWD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS")
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
@@ -47,6 +46,9 @@ case "$1" in
       fi
       if [ -n "$MOUNT_OPTIONS" ]; then
         OPTIONS+=("$MOUNT_OPTIONS")
+      fi
+      if [ -n "$FS_GROUP" ]; then
+        OPTIONS+=("gid=$FS_GROUP")
       fi
       OPTIONS=$(IFS=,; echo "${OPTIONS[*]}")
       ERROR_MSG=$(mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$OPTIONS" 2>&1)
