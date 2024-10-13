@@ -72,7 +72,7 @@ case "$1" in
         if [[ "$(hostname)" == "$NAS_HOSTNAME" ]]; then
             log "Performing local direct mount"
             run_or_die "mount --bind \"$NAS_LOCAL_PATH\" \"$MOUNT_DIR\""
-            
+
             if [[ "$READ_ONLY" == "true" ]]; then
                 run_or_die "mount -o remount,bind,ro \"$MOUNT_DIR\""
             fi
@@ -82,7 +82,7 @@ case "$1" in
             [[ "$READ_ONLY" == "true" ]] && OPTIONS+=("ro")
             [[ -n "$MOUNT_OPTIONS" ]] && OPTIONS+=("$MOUNT_OPTIONS")
             [[ -n "$FS_GROUP" ]] && OPTIONS+=("gid=$FS_GROUP")
-            
+
             run_or_die "mount -t cifs \"$NAS_NETWORK_PATH\" \"$MOUNT_DIR\" -o \"$(IFS=,; echo "${OPTIONS[*]}")\""
         fi
 
