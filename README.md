@@ -20,7 +20,7 @@ After installing the dependencies, ensure the `flexarr` script is executable and
 
 To use the `flexarr` FlexVolume plugin, follow these steps:
 
-1. **Create a PersistentVolume (PV):** Define a PersistentVolume in your Kubernetes cluster that uses the `flexarr` driver. You can use the `example-persistentvolume.yaml` as a template.
+1. **Create a PersistentVolume (PV):** Define a PersistentVolume in your Kubernetes cluster that uses the `ninefives.online/flexarr` driver. Make sure you specify the necessary `flexVolume.options`. You can use the `example-persistentvolume.yaml` as a template.
 
 2. **Create a PersistentVolumeClaim (PVC):** Create a matching PersistentVolumeClaim:
 ```yaml
@@ -31,9 +31,9 @@ spec:
   volumeName: name-of-your-pv
 ```
 
-3. **Mount the Volume in a Pod:** Use the PVC in your Pod specification to mount the volume. Ensure that the Pod is scheduled on a node that can access the NAS device.
+1. **Mount the Volume in a Pod:** Use the PVC in your Pod specification to mount the volume. Ensure that the Pod is scheduled on a node that can access the NAS device.
 
-4. **Verify the Mount:** Once the Pod is running, verify that the volume is mounted correctly by checking the mount path inside the Pod.
+2. **Verify the Mount:** Once the Pod is running, verify that the volume is mounted correctly by checking the mount path inside the Pod.
 
 For more detailed examples, refer to the Kubernetes documentation on Persistent Volumes and Persistent Volume Claims.
 
