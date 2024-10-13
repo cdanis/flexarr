@@ -33,8 +33,8 @@ case "$1" in
     READ_ONLY=$(jq -r '.readOnly // "false"' <<< "$PARAMS")
     MOUNT_OPTIONS=$(jq -r '.mountOptions // ""' <<< "$PARAMS")
     FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
-    export USER=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS")
-    export PASSWD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS")
+    export USER=$(jq -r '."kubernetes.io/secret/username"' <<< "$PARAMS" | base64 --decode)
+    export PASSWD=$(jq -r '."kubernetes.io/secret/password"' <<< "$PARAMS" | base64 --decode)
     if [ "$(hostname)" == "$NAS_HOSTNAME" ]; then
       # Local direct mount
       ERROR_MSG=$(mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" 2>&1)
