@@ -108,6 +108,8 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
        persistentVolumeClaim:
          claimName: flexarr-pvc
    ```
+   You might also wish to add a `nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution` preference
+   on the hostname of your NAS.  In the future we may ship a mutating webhook to add this automatically.
 
 ## Troubleshooting
 
