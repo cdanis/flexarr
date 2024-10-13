@@ -64,9 +64,9 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
        - ReadWriteMany
      flexVolume:
        driver: "ninefives.online/flexarr"
-       fsType: "cifs"
+       fsType: "cifs"  # required
        secretRef:
-         name: cifs-secret
+         name: flexarr-cifs-secret
        options:
          nasHostname: "nas.example.com"
          nasLocalPath: "/local/path"

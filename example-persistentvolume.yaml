@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   flexVolume:
     driver: ninefives.online/flexarr
-    fsType: "cifs"
+    fsType: "cifs"  # required
     options:
       nasHostname: "nas.example.com"
       nasLocalPath: "/local/path"
