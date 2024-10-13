@@ -13,7 +13,7 @@ log() {
 }
 
 # Function for error handling
-error() {
+die() {
     log "ERROR: $1"
     echo "{\"status\": \"Failure\", \"message\": \"$1\"}"
     exit 1
@@ -22,13 +22,13 @@ error() {
 # Function to check required commands
 check_command() {
     if ! command -v "$1" &> /dev/null; then
-        error "$1 is not installed"
+        die "$1 is not installed"
     fi
 }
 
 # Function to safely decode base64
 safe_decode() {
-    echo "$1" | base64 --decode 2>/dev/null || error "Failed to decode $2"
+    echo "$1" | base64 --decode 2>/dev/null || die "Failed to decode $2"
 }
 
 # Main logic
@@ -51,9 +51,9 @@ case "$1" in
         FS_GROUP=$(jq -r '."kubernetes.io/mounterArgs.FsGroup" // empty' <<< "$PARAMS")
 
         # Check required parameters
-        [[ -z "$NAS_HOSTNAME" ]] && error "nasHostname is required"
-        [[ -z "$NAS_LOCAL_PATH" ]] && error "nasLocalPath is required"
-        [[ -z "$NAS_NETWORK_PATH" ]] && error "nasNetworkPath is required"
+        [[ -z "$NAS_HOSTNAME" ]] && die "nasHostname is required"
+        [[ -z "$NAS_LOCAL_PATH" ]] && die "nasLocalPath is required"
+        [[ -z "$NAS_NETWORK_PATH" ]] && die "nasNetworkPath is required"
 
         # Securely handle credentials
         USER=$(safe_decode "$(jq -r '."kubernetes.io/secret/username" // empty' <<< "$PARAMS")" "username")
@@ -61,7 +61,7 @@ case "$1" in
 
         if [[ "$(hostname)" == "$NAS_HOSTNAME" ]]; then
             log "Performing local direct mount"
-            mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" || error "Failed to mount locally"
+            mount --bind "$NAS_LOCAL_PATH" "$MOUNT_DIR" || die "Failed to mount locally"
         else
             log "Performing CIFS mount"
             OPTIONS=("user=$USER" "password=$PASSWD")
@@ -69,17 +69,17 @@ case "$1" in
             [[ -n "$MOUNT_OPTIONS" ]] && OPTIONS+=($MOUNT_OPTIONS)
             [[ -n "$FS_GROUP" ]] && OPTIONS+=("gid=$FS_GROUP")
             
-            mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$(IFS=,; echo "${OPTIONS[*]}")" || error "Failed to mount CIFS"
+            mount -t cifs "$NAS_NETWORK_PATH" "$MOUNT_DIR" -o "$(IFS=,; echo "${OPTIONS[*]}")" || die "Failed to mount CIFS"
         fi
 
         echo '{"status": "Success"}'
         ;;
     unmount)
         MOUNT_DIR=$2
-        umount "$MOUNT_DIR" || error "Failed to unmount $MOUNT_DIR"
+        umount "$MOUNT_DIR" || die "Failed to unmount $MOUNT_DIR"
         echo '{"status": "Success"}'
         ;;
     *)
-        error "Not supported"
+        die "Not supported"
         ;;
 esac
