@@ -128,6 +128,7 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
 
 - The flexarr script handles sensitive information (CIFS credentials). Ensure that the script file has appropriate permissions and is only writable by the necessary system users.
 - Use Kubernetes Secrets to manage CIFS credentials.
+- Bind mounts are spooky. Use with caution.
 
 ## License
 
