@@ -113,9 +113,9 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
   ```bash
   kubectl logs -n kube-system -l name=flexarr-installer
   ```
-- Verify the flexarr script is present on all nodes:
+- Verify the flexarr script is present and executable on all nodes:
   ```bash
-  ls /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr
+  ls -l /usr/libexec/kubernetes/kubelet-plugins/volume/exec/ninefives.online~flexarr/flexarr
   ```
 - Check the Kubernetes events for mount-related issues:
   ```bash
@@ -124,9 +124,8 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
 
 ## Security Considerations
 
-- The flexarr script handles sensitive information (CIFS credentials). Ensure that the script file has appropriate permissions and is only accessible by the necessary system users.
-- Use Kubernetes Secrets to manage CIFS credentials, and avoid hardcoding them in PV definitions or pod specs.
-- Regularly rotate the CIFS credentials used by flexarr.
+- The flexarr script handles sensitive information (CIFS credentials). Ensure that the script file has appropriate permissions and is only writable by the necessary system users.
+- Use Kubernetes Secrets to manage CIFS credentials.
 
 ## License
 
