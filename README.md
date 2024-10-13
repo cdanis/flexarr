@@ -9,13 +9,13 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
 ### Prerequisites
 
 - Kubernetes cluster
-- `jq` and `cifs-utils` packages installed on all nodes
+- `jq`, `cifs-utils`, and `util-linux` packages installed on all nodes
 
 ### Manual Installation
 
 1. Install the required packages on all nodes:
    ```bash
-   sudo apt update && sudo apt install -y jq cifs-utils
+   sudo apt update && sudo apt install -y jq cifs-utils util-linux
    ```
 
 2. Copy the `flexarr` script to your FlexVolume directory:
