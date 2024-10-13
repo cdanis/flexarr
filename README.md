@@ -29,7 +29,7 @@ flexarr is a Kubernetes FlexVolume driver designed for heterogeneous homelab env
 
 1. Apply the DaemonSet configuration:
    ```bash
-   kubectl apply -k k8s/
+   kubectl apply -k .
    ```
 
 2. Verify the DaemonSet is running:
