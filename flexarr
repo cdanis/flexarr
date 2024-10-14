@@ -68,6 +68,7 @@ case "$1" in
         check_command jq
         check_command mount.cifs
         check_command logger
+        check_command mountpoint
         echo '{"status": "Success", "capabilities": {"attach": false}}'
         ;;
     mount)
@@ -115,8 +116,12 @@ case "$1" in
         ;;
     unmount)
         MOUNT_DIR=$2
-        run_or_die "umount \"$MOUNT_DIR\""
-        log "Unmount operation completed successfully"
+        if mountpoint -q "$MOUNT_DIR"; then
+            run_or_die "umount \"$MOUNT_DIR\""
+            log "Unmount operation completed successfully"
+        else
+            log "Mount point $MOUNT_DIR is not mounted, skipping unmount"
+        fi
         echo '{"status": "Success"}'
         ;;
     *)
