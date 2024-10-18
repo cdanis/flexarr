@@ -1,6 +1,6 @@
 #!/bin/bash
 # flexarr: a FlexVolume driver for CIFS or local direct mount
-# version 0.2.0
+# version 0.2.1
 # Copyright 2024 Chris Danis
 
 # ⚠️ WARNING! ⚠️
@@ -90,9 +90,10 @@ case "$1" in
         [[ -z "$NAS_NETWORK_PATH" ]] && die "nasNetworkPath is required"
         [[ "$FS_TYPE" != "cifs" ]] && die "fsType must be 'cifs'"
 
-        # Securely handle credentials
+        # Decode parameters from the secretRef
         USER=$(safe_decode "$(jq -r '."kubernetes.io/secret/username" // empty' <<< "$PARAMS")" "username")
         PASSWD=$(safe_decode "$(jq -r '."kubernetes.io/secret/password" // empty' <<< "$PARAMS")" "password")
+        SECRET_OPTIONS=$(safe_decode "$(jq -r '."kubernetes.io/secret/mountOptions" // empty' <<< "$PARAMS")" "mountOptions")
 
         if [[ "$(hostname)" == "$NAS_HOSTNAME" ]]; then
             log "Performing local direct mount"
@@ -106,6 +107,7 @@ case "$1" in
             OPTIONS=("user=$USER" "password=$PASSWD")
             [[ "$READ_ONLY" == "true" ]] && OPTIONS+=("ro")
             [[ -n "$MOUNT_OPTIONS" ]] && OPTIONS+=("$MOUNT_OPTIONS")
+            [[ -n "$SECRET_OPTIONS" ]] && OPTIONS+=("$SECRET_OPTIONS")
             [[ -n "$FS_GROUP" ]] && OPTIONS+=("gid=$FS_GROUP")
 
             run_or_die "mount -t cifs \"$NAS_NETWORK_PATH\" \"$MOUNT_DIR\" -o \"$(IFS=,; echo "${OPTIONS[*]}")\""
